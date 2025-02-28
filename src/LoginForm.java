@@ -87,7 +87,7 @@ public class LoginForm extends JFrame {
                     stmt.setString(2, password);
                     ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
-                        new AdminForm().setVisible(true);
+                        new Dashboard().setVisible(true);
                         dispose(); // Tutup form login
                     } else {
                         JOptionPane.showMessageDialog(null, "Wrong User or Password", "Error", JOptionPane.ERROR_MESSAGE);

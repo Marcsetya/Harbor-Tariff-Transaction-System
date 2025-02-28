@@ -3,9 +3,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class AdminForm extends JFrame {
+public class Dashboard extends JFrame {
     private JPanel contentPanel;
-    public AdminForm() {
+    public Dashboard() {
         setTitle("Dashboard");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,7 +43,7 @@ public class AdminForm extends JFrame {
         sidebarPanel.setPreferredSize(new Dimension(200, 0));
  
         // Tombol Navigasi
-        String[] menuItems = {"Transaction Information", "Tariff", "Ship Information", "Company Information", "Ship Category"};
+        String[] menuItems = {"Transaction Information", "Ship Information", "Company Information"};
         for (String item : menuItems) {
             JButton menuButton = new JButton(item);
             menuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -68,7 +68,8 @@ public class AdminForm extends JFrame {
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         // Tampilkan form default saat pertama kali dibuka
-        //tampilkanForm("Informasi");
+        tampilkanForm("Ship Information");
+        dispose();
         add(mainPanel);
     }
 
@@ -76,27 +77,20 @@ public class AdminForm extends JFrame {
     private void tampilkanForm(String formName) {
         contentPanel.removeAll(); // Hapus konten sebelumnya
         switch (formName) {
-            case "Produk":
-            //contentPanel.add(new FormProduk(), BorderLayout.CENTER);
+            //case "Transaction Information":
+            //contentPanel.add(new TransInfoForm(), BorderLayout.CENTER);
+            //break;
+            case "Ship Information":
+            //contentPanel.add(new ShipInfoForm(), BorderLayout.CENTER);
             break;
-            case "Manajemen User":
-            //contentPanel.add(new FormManajemenUser(), BorderLayout.CENTER);
-            break;
-            case "Informasi":
-            //contentPanel.add(new FormInformasi(), BorderLayout.CENTER);
-            break;
-            case "Laporan":
-            //contentPanel.add(new FormLaporan(), BorderLayout.CENTER);
-            break;
-            case "Pencarian":
-            //contentPanel.add(new FormPencarian(), BorderLayout.CENTER);
-            break;   
+            //case "Company Information":
+            //contentPanel.add(new ComInfoForm(), BorderLayout.CENTER);
         }
         contentPanel.revalidate();
         contentPanel.repaint();
     }
             
     public static void main(String[] args) {
-        new AdminForm().setVisible(true);       
+        new Dashboard().setVisible(true);       
     }
 }
