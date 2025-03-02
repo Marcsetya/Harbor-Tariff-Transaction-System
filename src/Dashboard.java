@@ -5,92 +5,93 @@ import java.awt.event.ActionListener;
 
 public class Dashboard extends JFrame {
     private JPanel contentPanel;
+    private CardLayout cardLayout;
+
     public Dashboard() {
         setTitle("Dashboard");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
- 
-        // Panel Utama
+
+        // Main Panel
         JPanel mainPanel = new JPanel(new BorderLayout());
- 
+
         // Header
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(50, 120, 200)); // Warna biru muda
+        headerPanel.setBackground(new Color(50, 120, 200)); // Light Blue
         JLabel titleLabel = new JLabel("Dashboard");
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerPanel.add(titleLabel);
- 
-        // Tombol Logout
+
+        // Logout Button
         JButton logoutButton = new JButton("Logout");
-        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        logoutButton.setBackground(new Color(200, 50, 50)); // Warna merah
+        logoutButton.setBackground(new Color(200, 50, 50)); // Red
         logoutButton.setForeground(Color.WHITE);
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new LoginForm().setVisible(true);
-                dispose(); // Tutup dashboard
+                dispose(); // Close dashboard
             }
         });
+
         mainPanel.add(headerPanel, BorderLayout.NORTH);
- 
+
         // Sidebar
         JPanel sidebarPanel = new JPanel();
         sidebarPanel.setLayout(new BoxLayout(sidebarPanel, BoxLayout.Y_AXIS));
-        sidebarPanel.setBackground(new Color(70, 130, 180)); // Warna biru muda lebih gelap
+        sidebarPanel.setBackground(new Color(70, 130, 180)); // Dark Blue
         sidebarPanel.setPreferredSize(new Dimension(200, 0));
- 
-        // Tombol Navigasi
-        String[] menuItems = {"Transaction Information", "Ship Information", "Company Information"};
+
+        // CardLayout for content switching
+        cardLayout = new CardLayout();
+        contentPanel = new JPanel(cardLayout);
+
+        // Create and add panels for each section
+        JPanel transactionsPanel = new TransactionInfo(); // This one is using the TransactionInfo panel
+        JPanel shipInfoPanel = new ShipInfo(); // This one is using the ShipInfo panel
+        JPanel companyInfoPanel = new CompanyInfo(); // This one is using the CompanyInfo panel
+
+        // This is how to add card panels to the content panel
+        contentPanel.add(transactionsPanel, "Transactions");
+        contentPanel.add(shipInfoPanel, "Ship Information"); 
+        contentPanel.add(companyInfoPanel, "Company Information");
+
+        // Sidebar Menu Buttons
+        String[] menuItems = {"Transactions", "Ship Information", "Company Information"};
         for (String item : menuItems) {
             JButton menuButton = new JButton(item);
             menuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-            menuButton.setMaximumSize(new Dimension(180, 180));
-            menuButton.setBackground(new Color(90, 150, 210)); // Warna biru muda
+            menuButton.setMaximumSize(new Dimension(180, 40));
+            menuButton.setBackground(new Color(90, 150, 210)); // Light Blue
             menuButton.setForeground(Color.WHITE);
             menuButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    tampilkanForm(item); // Tampilkan form sesuai tombol yang diklik
+                    cardLayout.show(contentPanel, item); // Switch panel
                 }
             });
             sidebarPanel.add(menuButton);
-            sidebarPanel.add(logoutButton);
             sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        }    
+        }
+
+        // Add Logout Button at the Bottom of Sidebar
+        sidebarPanel.add(Box.createVerticalGlue());
+        sidebarPanel.add(logoutButton);
+        sidebarPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        // Add Panels to Main Frame
         mainPanel.add(sidebarPanel, BorderLayout.WEST);
-            
-        // Content Area
-        contentPanel = new JPanel();
-        contentPanel.setLayout(new BorderLayout());
         mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
-        // Tampilkan form default saat pertama kali dibuka
-        tampilkanForm("Ship Information");
-        dispose();
+
+        // Show Default Panel
+        cardLayout.show(contentPanel, "Transactions");
+
         add(mainPanel);
     }
 
-    // Method untuk menampilkan form sesuai tombol yang diklik
-    private void tampilkanForm(String formName) {
-        contentPanel.removeAll(); // Hapus konten sebelumnya
-        switch (formName) {
-            //case "Transaction Information":
-            //contentPanel.add(new TransInfoForm(), BorderLayout.CENTER);
-            //break;
-            case "Ship Information":
-            //contentPanel.add(new ShipInfoForm(), BorderLayout.CENTER);
-            break;
-            //case "Company Information":
-            //contentPanel.add(new ComInfoForm(), BorderLayout.CENTER);
-        }
-        contentPanel.revalidate();
-        contentPanel.repaint();
-    }
-            
     public static void main(String[] args) {
-        new Dashboard().setVisible(true);       
+        SwingUtilities.invokeLater(() -> new Dashboard().setVisible(true));
     }
 }
