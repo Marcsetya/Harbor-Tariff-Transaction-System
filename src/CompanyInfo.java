@@ -49,6 +49,7 @@ public class CompanyInfo extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 String name = nameField.getText();
                 String billing = billingField.getText();
+
                 try {
                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                     PreparedStatement stmt = conn.prepareStatement("INSERT INTO company (company_name, billing_address) VALUES (?, ?)");
@@ -129,6 +130,7 @@ public class CompanyInfo extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 tableModel.setRowCount(0);
+
                 try {
                     Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                     PreparedStatement stmt = conn.prepareStatement("SELECT * FROM company");
@@ -179,8 +181,9 @@ public class CompanyInfo extends JPanel{
         add(viewButton, BorderLayout.LINE_END);
         add(scrollPane, BorderLayout.SOUTH);
     }
+
     private void refreshTable() {
-        tableModel.setRowCount(0); // Clear tabel sebelum menambahkan data baru
+        tableModel.setRowCount(0); // Clears the table before adding new data
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/pos_db", "root", "");
             PreparedStatement stmt = conn.prepareStatement("SELECT * FROM company");
