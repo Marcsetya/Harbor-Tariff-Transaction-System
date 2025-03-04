@@ -70,6 +70,7 @@ public class Dashboard extends JFrame {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     cardLayout.show(contentPanel, item); // Switch panel
+                    System.out.println(item); // Debug message
                 }
             });
             sidebarPanel.add(menuButton);
@@ -87,6 +88,9 @@ public class Dashboard extends JFrame {
 
         // Show Default Panel
         cardLayout.show(contentPanel, "Transactions");
+
+        // Debug message
+        System.out.println("Default panel set to Transactions");
 
         add(mainPanel);
     }
