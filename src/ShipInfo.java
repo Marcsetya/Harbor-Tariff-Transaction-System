@@ -25,9 +25,9 @@ public class ShipInfo extends JPanel {
         JLabel shipCategoryLabel = new JLabel("Ship Category");
         JLabel shipnameLabel = new JLabel("Ship Name");
         labelPanel.add(companyIdLabel);
-        labelPanel.add(Box.createVerticalStrut(10)); // Adds spacing
+        labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
         labelPanel.add(shipCategoryLabel);
-        labelPanel.add(Box.createVerticalStrut(10)); // Adds spacing
+        labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
         labelPanel.add(shipnameLabel);
 
         // Right side Input fields
@@ -122,7 +122,7 @@ public class ShipInfo extends JPanel {
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
 
         // Adding components to the panel
-        add(titleLabel, BorderLayout.NORTH);
+        add(topPanel, BorderLayout.NORTH);
         add(centerWrapper, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
     }
