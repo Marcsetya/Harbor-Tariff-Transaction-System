@@ -12,7 +12,6 @@ public class CategoryInfo extends JPanel {
         setLayout(new BorderLayout());
 
         // Title label
-
         JLabel titleLabel = new JLabel("Ship Categories", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 

@@ -53,15 +53,18 @@ public class Dashboard extends JFrame {
         JPanel shipInfoPanel = new ShipInfo(); // This one is using the ShipInfo panel
         JPanel companyInfoPanel = new CompanyInfo(); // This one is using the CompanyInfo panel
         JPanel CategoryInfoPanel = new CategoryInfo(); // This one is using the CategoryInfo panel
+        JPanel TariffInfoPanel = new TariffInfo(); // This one is using the TariffInfo panel
 
         // This is how to add card panels to the content panel
         contentPanel.add(transactionsPanel, "Transactions");
         contentPanel.add(shipInfoPanel, "Ship Information");
         contentPanel.add(companyInfoPanel, "Company Information");
         contentPanel.add(CategoryInfoPanel, "Ship Categories");
+        contentPanel.add(TariffInfoPanel, "Tariff information");
 
         // Sidebar Menu Buttons
-        String[] menuItems = { "Transactions", "Ship Information", "Company Information", "Ship Categories" };
+        String[] menuItems = { "Transactions", "Ship Information", "Company Information", "Ship Categories",
+                "Tariff information" };
         for (String item : menuItems) {
             JButton menuButton = new JButton(item);
             menuButton.setAlignmentX(Component.CENTER_ALIGNMENT);

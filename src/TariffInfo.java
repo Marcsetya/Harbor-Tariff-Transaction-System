@@ -3,54 +3,46 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
 
-public class ShipInfo extends JPanel {
+public class TariffInfo extends JPanel {
     private DefaultTableModel tableModel;
-    private JTextField companyIdField, shipCategoryField, shipNameField, searchField;
+    private JTextField shipCategoryField, tariffAmountField, searchField;
     private JTable table;
 
-    public ShipInfo() {
+    public TariffInfo() {
         setLayout(new BorderLayout());
 
-        // Setting a JLabel as the title
-        JLabel titleLabel = new JLabel("Ship Information", JLabel.CENTER);
+        // Title label
+        JLabel titleLabel = new JLabel("Tariff Information", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // Form panel
-        JPanel formPanel = new JPanel(new BorderLayout(10, 10));
+        // Form Panel using BorderLayout for better alignment
+        JPanel formPanel = new JPanel(new BorderLayout(10, 10)); // Adds spacing
 
-        // Left side Labels
+        // left side: Labels
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
-        JLabel companyIdLabel = new JLabel("Company ID:");
         JLabel shipCategoryLabel = new JLabel("Ship Category:");
-        JLabel shipnameLabel = new JLabel("Ship Name:");
-        labelPanel.add(companyIdLabel);
-        labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
+        JLabel tariffAmountLabel = new JLabel("Tariff Amount:");
         labelPanel.add(shipCategoryLabel);
         labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
-        labelPanel.add(shipnameLabel);
+        labelPanel.add(tariffAmountLabel);
 
-        // Right side Input fields
+        // Right side: Input fields
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
-        companyIdField = new JTextField();
         shipCategoryField = new JTextField();
-        shipNameField = new JTextField();
+        tariffAmountField = new JTextField();
 
         // Set fixed size for input fields
         Dimension inputSize = new Dimension(200, 25);
-        companyIdField.setPreferredSize(inputSize);
-        companyIdField.setMaximumSize(inputSize);
         shipCategoryField.setPreferredSize(inputSize);
         shipCategoryField.setMaximumSize(inputSize);
-        shipNameField.setPreferredSize(inputSize);
-        shipNameField.setMaximumSize(inputSize);
+        tariffAmountField.setPreferredSize(inputSize);
+        tariffAmountField.setMaximumSize(inputSize);
 
-        inputPanel.add(companyIdField);
-        inputPanel.add(Box.createVerticalStrut(10));
         inputPanel.add(shipCategoryField);
         inputPanel.add(Box.createVerticalStrut(10));
-        inputPanel.add(shipNameField);
+        inputPanel.add(tariffAmountField);
 
         // Adding Both panels to formPanel
         formPanel.add(labelPanel, BorderLayout.WEST);
@@ -127,65 +119,61 @@ public class ShipInfo extends JPanel {
         add(scrollPane, BorderLayout.SOUTH);
     }
 
-    /** Adds a new ship info to the database */
+    /** Adds a new tariff to the database */
     private void addShip() {
-        String companyID = companyIdField.getText();
         String Category = shipCategoryField.getText();
-        String ShipName = shipNameField.getText();
+        String Tariff = tariffAmountField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                 PreparedStatement stmt = conn
-                        .prepareStatement("INSERT INTO ships (company_id, category_id, ship_name) VALUES (?, ?, ?)")) {
-            stmt.setString(1, companyID);
-            stmt.setString(2, Category);
-            stmt.setString(3, ShipName);
+                        .prepareStatement("INSERT INTO tariff (category_id, Tariff_Amount) VALUES (?, ?)")) {
+            stmt.setString(1, Category);
+            stmt.setString(2, Tariff);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Company Successfully Added!");
+            JOptionPane.showMessageDialog(null, "Tariff Successfully Added!");
             refreshTable();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Edits the selected ship info record */
+    /** Edits the selected tariff record */
     private void editShip() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a company to edit.");
+            JOptionPane.showMessageDialog(null, "Please select a tariff to edit.");
             return;
         }
         int id = (int) table.getValueAt(selectedRow, 0);
-        String companyID = companyIdField.getText();
         String Category = shipCategoryField.getText();
-        String ShipName = shipNameField.getText();
+        String Tariff = tariffAmountField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                 PreparedStatement stmt = conn
                         .prepareStatement(
-                                "UPDATE ships SET company_id = ?, category_id = ?, ship_name = ? WHERE id = ?")) {
-            stmt.setString(1, companyID);
-            stmt.setString(2, Category);
-            stmt.setString(3, ShipName);
-            stmt.setInt(4, id);
+                                "UPDATE tariff SET category_id = ?, Tariff_Amount = ? WHERE id = ?")) {
+            stmt.setString(1, Category);
+            stmt.setString(2, Tariff);
+            stmt.setInt(3, id);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Company Successfully Edited!");
+            JOptionPane.showMessageDialog(null, "Tariff Successfully Edited!");
             refreshTable();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Deletes the selected ship info record */
+    /** Deletes the selected tariff record */
     private void deleteShip() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a ship to remove.");
+            JOptionPane.showMessageDialog(null, "Please select a tariff to remove.");
             return;
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM ships WHERE id = ?")) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM tariff WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Ship Info Successfully Removed!");
+            JOptionPane.showMessageDialog(null, "Tariff Successfully Removed!");
             refreshTable();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -197,12 +185,12 @@ public class ShipInfo extends JPanel {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ships WHERE ship_name LIKE ?")) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tariff WHERE Tariff_Amount LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"),
-                        rs.getInt("category_id"), rs.getString("ship_name"), rs.getTimestamp("updated_time") });
+                tableModel.addRow(
+                        new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -216,12 +204,12 @@ public class ShipInfo extends JPanel {
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "")) {
             System.out.println("Database connected successfully!"); // Debugging log
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ships");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tariff");
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"),
-                        rs.getInt("category_id"), rs.getString("ship_name"), rs.getTimestamp("updated_time") });
+                tableModel.addRow(
+                        new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {
