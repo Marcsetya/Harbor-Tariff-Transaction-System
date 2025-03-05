@@ -3,60 +3,45 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.sql.*;
 
-public class ShipInfo extends JPanel {
+public class CategoryInfo extends JPanel {
     private DefaultTableModel tableModel;
-    private JTextField companyIdField, shipCategoryField, shipNameField, searchField;
+    private JTextField shipCategoryField, searchField;
     private JTable table;
 
-    public ShipInfo() {
+    public CategoryInfo() {
         setLayout(new BorderLayout());
 
-        // Setting a JLabel as the title
-        JLabel titleLabel = new JLabel("Ship Information", JLabel.CENTER);
+        // Title label
+
+        JLabel titleLabel = new JLabel("Ship Categories", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // Form panel
-        JPanel formPanel = new JPanel(new BorderLayout(10, 10));
+        // Form Panel using BorderLayout for better alignment
+        JPanel formPanel = new JPanel(new BorderLayout(10, 10)); // Adds spacing
 
-        // Left side Labels
+        // left side: Labels
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
-        JLabel companyIdLabel = new JLabel("Company ID");
-        JLabel shipCategoryLabel = new JLabel("Ship Category");
-        JLabel shipnameLabel = new JLabel("Ship Name");
-        labelPanel.add(companyIdLabel);
-        labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
+        JLabel shipCategoryLabel = new JLabel("Ship Category:");
         labelPanel.add(shipCategoryLabel);
-        labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
-        labelPanel.add(shipnameLabel);
 
-        // Right side Input fields
+        // Right side: Input fields
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
-        companyIdField = new JTextField();
         shipCategoryField = new JTextField();
-        shipNameField = new JTextField();
 
         // Set fixed size for input fields
         Dimension inputSize = new Dimension(200, 25);
-        companyIdField.setPreferredSize(inputSize);
-        companyIdField.setMaximumSize(inputSize);
         shipCategoryField.setPreferredSize(inputSize);
-        shipCategoryField.setMaximumSize(inputSize);
-        shipNameField.setPreferredSize(inputSize);
-        shipCategoryField.setMaximumSize(inputSize);
+        shipCategoryField.setMaximumSize(inputSize); // Prevents stretching
 
-        inputPanel.add(companyIdField);
-        inputPanel.add(Box.createVerticalStrut(10));
         inputPanel.add(shipCategoryField);
-        inputPanel.add(Box.createVerticalStrut(10));
-        inputPanel.add(shipNameField);
 
-        // Adding Both panels to formPanel
+        // Adding label and input panel to the formPanel
         formPanel.add(labelPanel, BorderLayout.WEST);
         formPanel.add(inputPanel, BorderLayout.CENTER);
 
-        // Wrapping the formPanelin a center-aligned panel
+        // Wrap everything in a center-aligned panel
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout()); // Centers components
         GridBagConstraints gbc = new GridBagConstraints();
@@ -76,7 +61,7 @@ public class ShipInfo extends JPanel {
         JButton viewButton = new JButton("View");
         JButton searchButton = new JButton("Search");
 
-        // Styling the Buttons
+        // Styling Buttons
         Color buttonColor = new Color(50, 120, 200); // Light Blue
         Color textColor = Color.WHITE;
         JButton[] buttons = { addButton, editButton, deleteButton, viewButton, searchButton };
@@ -98,17 +83,16 @@ public class ShipInfo extends JPanel {
         searchPanel.add(searchButton);
 
         // Table
-        tableModel = new DefaultTableModel(
-                new String[] { "ID", "Company ID", "Ship Category ID", "Ship Name", "Updated At" }, 0);
+        tableModel = new DefaultTableModel(new String[] { "ID", "Ship Category Name" }, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
         // Button Actions
-        addButton.addActionListener(_ -> addShip());
-        editButton.addActionListener(_ -> editShip());
-        deleteButton.addActionListener(_ -> deleteShip());
-        viewButton.addActionListener(_ -> refreshTable());
-        searchButton.addActionListener(_ -> searchShip());
+        addButton.addActionListener(_ -> addShipCategory());
+        editButton.addActionListener(_ -> editShipCategory());
+        deleteButton.addActionListener(_ -> deleteShipCategory());
+        // viewButton.addActionListener(_ -> refreshShipCategory());
+        searchButton.addActionListener(_ -> searchShipCategory());
 
         // Wrapper for Title & SearchPanel
         JPanel topPanel = new JPanel(new BorderLayout());
@@ -121,23 +105,19 @@ public class ShipInfo extends JPanel {
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
 
-        // Adding components to the panel
+        // Adding Components to Panel
         add(topPanel, BorderLayout.NORTH);
         add(centerWrapper, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
     }
 
-    /** Adds a new ship info to the database */
-    private void addShip() {
-        String companyID = companyIdField.getText();
-        String Category = shipCategoryField.getText();
-        String ShipName = shipNameField.getText();
+    /** Adds a new ship category to the database */
+    private void addShipCategory() {
+        String shipCategory = shipCategoryField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                 PreparedStatement stmt = conn
-                        .prepareStatement("INSERT INTO ships (company_id, category_id, ship_name) VALUES (?, ?, ?)")) {
-            stmt.setString(1, companyID);
-            stmt.setString(2, Category);
-            stmt.setString(3, ShipName);
+                        .prepareStatement("INSERT INTO category (ship_size) VALUES (?)")) {
+            stmt.setString(1, shipCategory);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Company Successfully Added!");
             refreshTable();
@@ -146,63 +126,57 @@ public class ShipInfo extends JPanel {
         }
     }
 
-    /** Edits the selected ship info record */
-    private void editShip() {
+    /** Edits the selected ship category record */
+    private void editShipCategory() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a company to edit.");
+            JOptionPane.showMessageDialog(null, "Please select a ship category to edit.");
             return;
         }
         int id = (int) table.getValueAt(selectedRow, 0);
-        String companyID = companyIdField.getText();
-        String Category = shipCategoryField.getText();
-        String ShipName = shipNameField.getText();
+        String shipCategory = shipCategoryField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                 PreparedStatement stmt = conn
-                        .prepareStatement(
-                                "UPDATE ships SET company_id = ?, category_id = ?, ship_name = ? WHERE id = ?")) {
-            stmt.setString(1, companyID);
-            stmt.setString(2, Category);
-            stmt.setString(3, ShipName);
-            stmt.setInt(4, id);
+                        .prepareStatement("UPDATE category SET ship_size = ? WHERE id = ?")) {
+            stmt.setString(1, shipCategory);
+            stmt.setInt(2, id);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Company Successfully Edited!");
+            JOptionPane.showMessageDialog(null, "Ship Category Successfully Edited!");
             refreshTable();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Deletes the selected ship info record */
-    private void deleteShip() {
+    /** Deletes the selected ship Size record */
+    private void deleteShipCategory() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a ship to remove.");
+            JOptionPane.showMessageDialog(null, "Please select a company to delete.");
             return;
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM ships WHERE id = ?")) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM category WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Ship Info Successfully Removed!");
+            JOptionPane.showMessageDialog(null, "Ship Category Successfully Deleted!");
             refreshTable();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Searches for a ship info based on user input */
-    private void searchShip() {
+    /** Searches for a ship Category based on user input */
+    private void searchShipCategory() {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ships WHERE ship_name LIKE ?")) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM category WHERE ship_size LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"),
-                        rs.getInt("category_id"), rs.getString("ship_name"), rs.getTimestamp("updated_time") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("ship_size") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -216,12 +190,11 @@ public class ShipInfo extends JPanel {
 
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "")) {
             System.out.println("Database connected successfully!"); // Debugging log
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ships");
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM category");
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"),
-                        rs.getInt("category_id"), rs.getString("ship_name"), rs.getTimestamp("updated_time") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("ship_size") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {
