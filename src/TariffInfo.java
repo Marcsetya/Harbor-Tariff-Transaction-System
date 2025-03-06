@@ -15,10 +15,10 @@ public class TariffInfo extends JPanel {
         JLabel titleLabel = new JLabel("Tariff Information", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // Form Panel using BorderLayout for better alignment
+        // formPanel using BorderLayout for better alignment
         JPanel formPanel = new JPanel(new BorderLayout(10, 10)); // Adds spacing
 
-        // left side: Labels
+        // left side: labels
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
         JLabel shipCategoryLabel = new JLabel("Ship Category:");
@@ -27,7 +27,7 @@ public class TariffInfo extends JPanel {
         labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
         labelPanel.add(tariffAmountLabel);
 
-        // Right side: Input fields
+        // Right side: input fields
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         shipCategoryField = new JTextField();
@@ -44,11 +44,11 @@ public class TariffInfo extends JPanel {
         inputPanel.add(Box.createVerticalStrut(10));
         inputPanel.add(tariffAmountField);
 
-        // Adding Both panels to formPanel
+        // Adding label and input panels to the formPanel
         formPanel.add(labelPanel, BorderLayout.WEST);
         formPanel.add(inputPanel, BorderLayout.CENTER);
 
-        // Wrapping the formPanelin a center-aligned panel
+        // Wrap everything in a center-aligned panel
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout()); // Centers components
         GridBagConstraints gbc = new GridBagConstraints();
@@ -60,7 +60,7 @@ public class TariffInfo extends JPanel {
         centerPanel.add(formPanel, gbc);
         formPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Ensures alignment
 
-        // Declaring the Buttons
+        // Declaring the buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
@@ -68,7 +68,7 @@ public class TariffInfo extends JPanel {
         JButton viewButton = new JButton("View");
         JButton searchButton = new JButton("Search");
 
-        // Styling the Buttons
+        // Styling the buttons
         Color buttonColor = new Color(50, 120, 200); // Light Blue
         Color textColor = Color.WHITE;
         JButton[] buttons = { addButton, editButton, deleteButton, viewButton, searchButton };
@@ -91,18 +91,18 @@ public class TariffInfo extends JPanel {
 
         // Table
         tableModel = new DefaultTableModel(
-                new String[] { "ID", "Company ID", "Ship Category ID", "Ship Name", "Updated At" }, 0);
+        new String[] { "ID", "Category ID", "Tariff Amount"}, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // Button Actions
-        addButton.addActionListener(_ -> addShip());
-        editButton.addActionListener(_ -> editShip());
-        deleteButton.addActionListener(_ -> deleteShip());
-        viewButton.addActionListener(_ -> refreshTable());
-        searchButton.addActionListener(_ -> searchShip());
+        // Button actions
+        addButton.addActionListener(e -> addShip());
+        editButton.addActionListener(e -> editShip());
+        deleteButton.addActionListener(e -> deleteShip());
+        viewButton.addActionListener(e -> refreshTable());
+        searchButton.addActionListener(e -> searchShip());
 
-        // Wrapper for Title & SearchPanel
+        // Wrapper for titleLabel & searchPanel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(titleLabel, BorderLayout.NORTH);
         topPanel.add(searchPanel, BorderLayout.CENTER);
@@ -119,13 +119,12 @@ public class TariffInfo extends JPanel {
         add(scrollPane, BorderLayout.SOUTH);
     }
 
-    /** Adds a new tariff to the database */
+    // Adds a new tariff to the database
     private void addShip() {
         String Category = shipCategoryField.getText();
         String Tariff = tariffAmountField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn
-                        .prepareStatement("INSERT INTO tariff (category_id, Tariff_Amount) VALUES (?, ?)")) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO tariff (category_id, Tariff_Amount) VALUES (?, ?)")) {
             stmt.setString(1, Category);
             stmt.setString(2, Tariff);
             stmt.executeUpdate();
@@ -136,7 +135,7 @@ public class TariffInfo extends JPanel {
         }
     }
 
-    /** Edits the selected tariff record */
+    // Edits the selected tariff record
     private void editShip() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -147,9 +146,7 @@ public class TariffInfo extends JPanel {
         String Category = shipCategoryField.getText();
         String Tariff = tariffAmountField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn
-                        .prepareStatement(
-                                "UPDATE tariff SET category_id = ?, Tariff_Amount = ? WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE tariff SET category_id = ?, Tariff_Amount = ? WHERE id = ?")) {
             stmt.setString(1, Category);
             stmt.setString(2, Tariff);
             stmt.setInt(3, id);
@@ -161,7 +158,7 @@ public class TariffInfo extends JPanel {
         }
     }
 
-    /** Deletes the selected tariff record */
+    // Deletes the selected tariff record
     private void deleteShip() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -170,7 +167,7 @@ public class TariffInfo extends JPanel {
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM tariff WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM tariff WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Tariff Successfully Removed!");
@@ -180,24 +177,24 @@ public class TariffInfo extends JPanel {
         }
     }
 
-    /** Searches for a ship info based on user input */
+    // Searches for a ship info based on user input
     private void searchShip() {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tariff WHERE Tariff_Amount LIKE ?")) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tariff WHERE Tariff_Amount LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 tableModel.addRow(
-                        new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
+                new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Refreshes the table data */
+    // Refreshes the table data
     private void refreshTable() {
         tableModel.setRowCount(0);
         System.out.println("Refreshing table..."); // Debugging log
@@ -209,7 +206,7 @@ public class TariffInfo extends JPanel {
 
             while (rs.next()) {
                 tableModel.addRow(
-                        new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
+                new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {

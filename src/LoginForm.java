@@ -17,27 +17,27 @@ public class LoginForm extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
  
-        // Panel Utama
+        // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(new Color(240, 240, 240)); // Warna latar belakang
+        mainPanel.setBackground(new Color(240, 240, 240));
  
         // Header
         JPanel headerPanel = new JPanel();
-        headerPanel.setBackground(new Color(50, 120, 200)); // Warna biru muda
+        headerPanel.setBackground(new Color(50, 120, 200)); // Light Blue
         JLabel titleLabel = new JLabel("Login");
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerPanel.add(titleLabel); 
         mainPanel.add(headerPanel, BorderLayout.NORTH);
 
-        // Form Login
+        // Login form
         JPanel formPanel = new JPanel();
         formPanel.setLayout(new GridBagLayout());
-        formPanel.setBackground(new Color(240, 240, 240)); // Warna latar belakang
+        formPanel.setBackground(new Color(240, 240, 240));
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10); // Padding
+        gbc.insets = new Insets(10, 10, 10, 10); // Adds padding
         
-        // Label dan Field Username
+        // Username label dan field
         JLabel userLabel = new JLabel("Username:");
         userLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 0;
@@ -49,7 +49,7 @@ public class LoginForm extends JFrame {
         gbc.gridy = 0;
         formPanel.add(usernameField, gbc);
 
-        // Label dan Field Password
+        // Password label dan field
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         gbc.gridx = 0;
@@ -61,10 +61,10 @@ public class LoginForm extends JFrame {
         gbc.gridy = 1;
         formPanel.add(passwordField, gbc);
  
-        // Tombol Login
+        // Login button
         JButton loginButton = new JButton("Login");
         loginButton.setFont(new Font("Arial", Font.BOLD, 14));
-        loginButton.setBackground(new Color(50, 120, 200)); // Warna biru muda
+        loginButton.setBackground(new Color(50, 120, 200)); // Light Blue
         loginButton.setForeground(Color.WHITE);
         loginButton.setFocusPainted(false);
         loginButton.setPreferredSize(new Dimension(100, 30));
@@ -74,21 +74,21 @@ public class LoginForm extends JFrame {
         formPanel.add(loginButton, gbc);
         mainPanel.add(formPanel, BorderLayout.CENTER);
  
-        // Action Listener untuk Tombol Login
+        // Action listener for login button
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = new String(passwordField.getPassword());
-                try {
-                    Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
+                try {Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
                     PreparedStatement stmt = conn.prepareStatement("SELECT * FROM user WHERE username = ? AND password = ?");
                     stmt.setString(1, username);
                     stmt.setString(2, password);
                     ResultSet rs = stmt.executeQuery();
                     if (rs.next()) {
                         new Dashboard().setVisible(true);
-                        dispose(); // Tutup form login
+                        SessionManager.setLoggedInUsername(username);
+                        dispose(); // Close login form
                     } else {
                         JOptionPane.showMessageDialog(null, "Wrong User or Password", "Error", JOptionPane.ERROR_MESSAGE);
                     }

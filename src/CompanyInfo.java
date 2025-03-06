@@ -11,14 +11,14 @@ public class CompanyInfo extends JPanel {
     public CompanyInfo() {
         setLayout(new BorderLayout());
 
-        // Title Label
+        // Title label
         JLabel titleLabel = new JLabel("Company Information", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // Form Panel using BorderLayout for better alignment
+        // formPanel using BorderLayout for better alignment
         JPanel formPanel = new JPanel(new BorderLayout(10, 10)); // Adds spacing
 
-        // Left side: Labels
+        // Left side: labels
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
         JLabel nameLabel = new JLabel("Company Name:");
@@ -27,7 +27,7 @@ public class CompanyInfo extends JPanel {
         labelPanel.add(Box.createVerticalStrut(20)); // Adds spacing
         labelPanel.add(billingLabel);
 
-        // Right side: Input fields
+        // Right side: input fields
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         nameField = new JTextField();
@@ -44,7 +44,7 @@ public class CompanyInfo extends JPanel {
         inputPanel.add(Box.createVerticalStrut(10));
         inputPanel.add(billingField);
 
-        // Add both panels to formPanel
+        // Adding label and input panels to the formPanel
         formPanel.add(labelPanel, BorderLayout.WEST);
         formPanel.add(inputPanel, BorderLayout.CENTER);
 
@@ -60,7 +60,7 @@ public class CompanyInfo extends JPanel {
         centerPanel.add(formPanel, gbc);
         formPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Ensures alignment
 
-        // Declaring the Buttons
+        // Declaring the buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
@@ -68,7 +68,7 @@ public class CompanyInfo extends JPanel {
         JButton viewButton = new JButton("View");
         JButton searchButton = new JButton("Search");
 
-        // Styling Buttons
+        // Styling buttons
         Color buttonColor = new Color(50, 120, 200); // Light Blue
         Color textColor = Color.WHITE;
         JButton[] buttons = { addButton, editButton, deleteButton, viewButton, searchButton };
@@ -94,14 +94,14 @@ public class CompanyInfo extends JPanel {
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // Button Actions
-        addButton.addActionListener(_ -> addCompany());
-        editButton.addActionListener(_ -> editCompany());
-        deleteButton.addActionListener(_ -> deleteCompany());
-        viewButton.addActionListener(_ -> refreshTable());
-        searchButton.addActionListener(_ -> searchCompany());
+        // Button actions
+        addButton.addActionListener(e -> addCompany());
+        editButton.addActionListener(e -> editCompany());
+        deleteButton.addActionListener(e -> deleteCompany());
+        viewButton.addActionListener(e -> refreshTable());
+        searchButton.addActionListener(e -> searchCompany());
 
-        // Wrapper for Title & SearchPanel
+        // Wrapper for titleLabel & searchPanel
         JPanel topPanel = new JPanel(new BorderLayout()); 
         topPanel.add(titleLabel, BorderLayout.NORTH);
         topPanel.add(searchPanel, BorderLayout.CENTER);
@@ -112,19 +112,18 @@ public class CompanyInfo extends JPanel {
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
 
-        // Adding Components to Panel
+        // Adding components to panel
         add(topPanel, BorderLayout.NORTH);
         add(centerWrapper, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
     }
 
-    /** Adds a new company to the database */
+    // Adds a new company to the database
     private void addCompany() {
         String name = nameField.getText();
         String billing = billingField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn
-                        .prepareStatement("INSERT INTO company (company_name, billing_address) VALUES (?, ?)")) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO company (company_name, billing_address) VALUES (?, ?)")) {
             stmt.setString(1, name);
             stmt.setString(2, billing);
             stmt.executeUpdate();
@@ -135,7 +134,7 @@ public class CompanyInfo extends JPanel {
         }
     }
 
-    /** Edits the selected company record */
+    // Edits the selected company record
     private void editCompany() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -146,8 +145,7 @@ public class CompanyInfo extends JPanel {
         String name = nameField.getText();
         String billing = billingField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn
-                        .prepareStatement("UPDATE company SET company_name = ?, billing_address = ? WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE company SET company_name = ?, billing_address = ? WHERE id = ?")) {
             stmt.setString(1, name);
             stmt.setString(2, billing);
             stmt.setInt(3, id);
@@ -159,7 +157,7 @@ public class CompanyInfo extends JPanel {
         }
     }
 
-    /** Deletes the selected company record */
+    // Deletes the selected company record
     private void deleteCompany() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -168,7 +166,7 @@ public class CompanyInfo extends JPanel {
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM company WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM company WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Company Successfully Deleted!");
@@ -178,24 +176,23 @@ public class CompanyInfo extends JPanel {
         }
     }
 
-    /** Searches for a company based on user input */
+    // Searches for a company based on user input
     private void searchCompany() {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM company WHERE company_name LIKE ?")) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM company WHERE company_name LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"),
-                        rs.getString("billing_address") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"), rs.getString("billing_address") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
 
-    /** Refreshes the table data */
+    // Refreshes the table data
     private void refreshTable() {
         tableModel.setRowCount(0);
         System.out.println("Refreshing table..."); // Debugging log
@@ -206,8 +203,7 @@ public class CompanyInfo extends JPanel {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"),
-                        rs.getString("billing_address") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"), rs.getString("billing_address") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {

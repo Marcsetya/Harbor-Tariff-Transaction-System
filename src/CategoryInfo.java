@@ -15,16 +15,16 @@ public class CategoryInfo extends JPanel {
         JLabel titleLabel = new JLabel("Ship Categories", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
 
-        // Form Panel using BorderLayout for better alignment
+        // formPanel using BorderLayout for better alignment
         JPanel formPanel = new JPanel(new BorderLayout(10, 10)); // Adds spacing
 
-        // left side: Labels
+        // left side: labels
         JPanel labelPanel = new JPanel();
         labelPanel.setLayout(new BoxLayout(labelPanel, BoxLayout.Y_AXIS));
         JLabel shipCategoryLabel = new JLabel("Ship Category:");
         labelPanel.add(shipCategoryLabel);
 
-        // Right side: Input fields
+        // Right side: input fields
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
         shipCategoryField = new JTextField();
@@ -36,7 +36,7 @@ public class CategoryInfo extends JPanel {
 
         inputPanel.add(shipCategoryField);
 
-        // Adding label and input panel to the formPanel
+        // Adding label and input panels to the formPanel
         formPanel.add(labelPanel, BorderLayout.WEST);
         formPanel.add(inputPanel, BorderLayout.CENTER);
 
@@ -52,7 +52,7 @@ public class CategoryInfo extends JPanel {
         centerPanel.add(formPanel, gbc);
         formPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Ensures alignment
 
-        // Declaring the Buttons
+        // Declaring the buttons
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
@@ -60,7 +60,7 @@ public class CategoryInfo extends JPanel {
         JButton viewButton = new JButton("View");
         JButton searchButton = new JButton("Search");
 
-        // Styling Buttons
+        // Styling the buttons
         Color buttonColor = new Color(50, 120, 200); // Light Blue
         Color textColor = Color.WHITE;
         JButton[] buttons = { addButton, editButton, deleteButton, viewButton, searchButton };
@@ -86,14 +86,14 @@ public class CategoryInfo extends JPanel {
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        // Button Actions
-        addButton.addActionListener(_ -> addShipCategory());
-        editButton.addActionListener(_ -> editShipCategory());
-        deleteButton.addActionListener(_ -> deleteShipCategory());
-        // viewButton.addActionListener(_ -> refreshShipCategory());
-        searchButton.addActionListener(_ -> searchShipCategory());
+        // Button actions
+        addButton.addActionListener(e -> addShipCategory());
+        editButton.addActionListener(e -> editShipCategory());
+        deleteButton.addActionListener(e -> deleteShipCategory());
+        viewButton.addActionListener(e -> refreshTable());
+        searchButton.addActionListener(e -> searchShipCategory());
 
-        // Wrapper for Title & SearchPanel
+        // Wrapper for titleLabel & searchPanel
         JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(titleLabel, BorderLayout.NORTH);
         topPanel.add(searchPanel, BorderLayout.CENTER);
@@ -104,18 +104,17 @@ public class CategoryInfo extends JPanel {
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
 
-        // Adding Components to Panel
+        // Adding components to the panel
         add(topPanel, BorderLayout.NORTH);
         add(centerWrapper, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
     }
 
-    /** Adds a new ship category to the database */
+    // Adds a new ship category to the database
     private void addShipCategory() {
         String shipCategory = shipCategoryField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn
-                        .prepareStatement("INSERT INTO category (ship_size) VALUES (?)")) {
+            PreparedStatement stmt = conn.prepareStatement("INSERT INTO category (ship_size) VALUES (?)")) {
             stmt.setString(1, shipCategory);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Company Successfully Added!");
@@ -125,7 +124,7 @@ public class CategoryInfo extends JPanel {
         }
     }
 
-    /** Edits the selected ship category record */
+    // Edits the selected ship category record
     private void editShipCategory() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -135,8 +134,7 @@ public class CategoryInfo extends JPanel {
         int id = (int) table.getValueAt(selectedRow, 0);
         String shipCategory = shipCategoryField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn
-                        .prepareStatement("UPDATE category SET ship_size = ? WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE category SET ship_size = ? WHERE id = ?")) {
             stmt.setString(1, shipCategory);
             stmt.setInt(2, id);
             stmt.executeUpdate();
@@ -147,7 +145,7 @@ public class CategoryInfo extends JPanel {
         }
     }
 
-    /** Deletes the selected ship Size record */
+    // Deletes the selected ship Size record
     private void deleteShipCategory() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -156,7 +154,7 @@ public class CategoryInfo extends JPanel {
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("DELETE FROM category WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("DELETE FROM category WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Ship Category Successfully Deleted!");
@@ -166,12 +164,12 @@ public class CategoryInfo extends JPanel {
         }
     }
 
-    /** Searches for a ship Category based on user input */
+    // Searches for a ship category based on user input
     private void searchShipCategory() {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM category WHERE ship_size LIKE ?")) {
+            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM category WHERE ship_size LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -182,7 +180,7 @@ public class CategoryInfo extends JPanel {
         }
     }
 
-    /** Refreshes the table data */
+    // Refreshes the table data
     private void refreshTable() {
         tableModel.setRowCount(0);
         System.out.println("Refreshing table..."); // Debugging log

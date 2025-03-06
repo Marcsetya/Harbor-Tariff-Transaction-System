@@ -13,7 +13,7 @@ public class Dashboard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Main Panel
+        // Main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         // Header
@@ -24,8 +24,9 @@ public class Dashboard extends JFrame {
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         headerPanel.add(titleLabel);
 
-        // Logout Button
+        // Logout button
         JButton logoutButton = new JButton("Logout");
+        logoutButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         logoutButton.setBackground(new Color(200, 50, 50)); // Red
         logoutButton.setForeground(Color.WHITE);
         logoutButton.addActionListener(new ActionListener() {
@@ -62,9 +63,8 @@ public class Dashboard extends JFrame {
         contentPanel.add(CategoryInfoPanel, "Ship Categories");
         contentPanel.add(TariffInfoPanel, "Tariff information");
 
-        // Sidebar Menu Buttons
-        String[] menuItems = { "Transactions", "Ship Information", "Company Information", "Ship Categories",
-                "Tariff information" };
+        // Sidebar menu buttons
+        String[] menuItems = { "Transactions", "Ship Information", "Company Information", "Ship Categories", "Tariff information" };
         for (String item : menuItems) {
             JButton menuButton = new JButton(item);
             menuButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -82,16 +82,16 @@ public class Dashboard extends JFrame {
             sidebarPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         }
 
-        // Add Logout Button at the Bottom of Sidebar
+        // Add logout button at the bottom of the sidebar
         sidebarPanel.add(Box.createVerticalGlue());
         sidebarPanel.add(logoutButton);
         sidebarPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // Add Panels to Main Frame
+        // Add panels to the main frame
         mainPanel.add(sidebarPanel, BorderLayout.WEST);
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
-        // Show Default Panel
+        // Show default panel
         cardLayout.show(contentPanel, "Transactions");
 
         // Debug message
