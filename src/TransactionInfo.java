@@ -1,18 +1,15 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import java.sql.*;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 
 public class TransactionInfo extends JPanel {
     private DefaultTableModel tableModel;
-    private JTextField tariffIdField, shipIdField, arrivalDateField, departureDateField, searchField;
+    private JTextField shipIdField, arrivalDateField, departureDateField, searchField;
     private JTable table;
+    private JComboBox<String> tariffIdCombo;
 
     public TransactionInfo() {
         setLayout(new BorderLayout());
@@ -42,15 +39,15 @@ public class TransactionInfo extends JPanel {
         // Right side: input fields
         JPanel inputPanel = new JPanel();
         inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.Y_AXIS));
-        tariffIdField = new JTextField();
+        tariffIdCombo = new JComboBox<>();
         shipIdField = new JTextField();
         arrivalDateField = new JTextField();
         departureDateField = new JTextField();
 
         // Set fixed size for input fields
         Dimension inputSize = new Dimension(200, 25);
-        tariffIdField.setPreferredSize(inputSize);
-        tariffIdField.setMaximumSize(inputSize);
+        tariffIdCombo.setPreferredSize(inputSize);
+        tariffIdCombo.setMaximumSize(inputSize);
         shipIdField.setPreferredSize(inputSize);
         shipIdField.setMaximumSize(inputSize);
         arrivalDateField.setPreferredSize(inputSize);
@@ -58,7 +55,7 @@ public class TransactionInfo extends JPanel {
         departureDateField.setPreferredSize(inputSize);
         departureDateField.setMaximumSize(inputSize);
 
-        inputPanel.add(tariffIdField);
+        inputPanel.add(tariffIdCombo);
         inputPanel.add(Box.createVerticalStrut(10));
         inputPanel.add(shipIdField);
         inputPanel.add(Box.createVerticalStrut(10));
@@ -139,11 +136,13 @@ public class TransactionInfo extends JPanel {
         add(topPanel, BorderLayout.NORTH);
         add(centerWrapper, BorderLayout.CENTER);
         add(scrollPane, BorderLayout.SOUTH);
+
+        loadTariffID();
     }
 
     // Adds a new transaction info to the database
     private void addTransaction() {
-        String Tariff = tariffIdField.getText();
+        String Tariff = (String) tariffIdCombo.getSelectedItem();
         String Ship = shipIdField.getText();
         String Arrival = arrivalDateField.getText();
         String Departure = departureDateField.getText();
@@ -179,7 +178,7 @@ public class TransactionInfo extends JPanel {
         }
 
         int id = (int) table.getValueAt(selectedRow, 0);
-        String Tariff = tariffIdField.getText();
+        String Tariff = (String) tariffIdCombo.getSelectedItem();
         String Ship = shipIdField.getText();
         String Arrival = arrivalDateField.getText();
         String Departure = departureDateField.getText();
@@ -263,6 +262,19 @@ public class TransactionInfo extends JPanel {
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {
             System.err.println("Database connection failed!");
+            ex.printStackTrace();
+        }
+    }
+
+    private void loadTariffID() {
+        tariffIdCombo.removeAllItems();
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT id FROM tariff")) {
+            while (rs.next()) {
+                tariffIdCombo.addItem(rs.getString("id"));
+            }
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
     }
