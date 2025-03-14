@@ -132,10 +132,15 @@ public class TransactionInfo extends JPanel {
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
 
+        // Middle wrapper
+        JPanel middleWrapper = new JPanel();
+        middleWrapper.setLayout(new BorderLayout());
+        middleWrapper.add(centerWrapper, BorderLayout.NORTH);
+        middleWrapper.add(scrollPane, BorderLayout.CENTER);
+
         // Adding components to the panel
         add(topPanel, BorderLayout.NORTH);
-        add(centerWrapper, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
+        add(middleWrapper, BorderLayout.CENTER);
 
         loadTariffID();
     }
@@ -184,9 +189,13 @@ public class TransactionInfo extends JPanel {
         String Departure = departureDateField.getText();
         double total_amount = calculateTariff(Ship, Arrival, Departure);
         int userId = getCurrentUserId();
+        if (userId == -1) {
+            JOptionPane.showMessageDialog(null, "Cannot add transaction. No valid user ID.");
+            return;
+        }
         
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("UPDATE transactions SET tariff_id = ?, ship_id = ?, arrival_date = ?, departure_date = ? WHERE id = ?")) {
+            PreparedStatement stmt = conn.prepareStatement("UPDATE transactions SET tariff_id = ?, ship_id = ?, arrival_date = ?, departure_date = ?, total_amount = ?, user_id = ?, WHERE id = ?")) {
             stmt.setString(1, Tariff);
             stmt.setString(2, Ship);
             stmt.setString(3, Arrival);
@@ -195,7 +204,7 @@ public class TransactionInfo extends JPanel {
             stmt.setInt(6, userId);
             stmt.setInt(7, id);
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(null, "Transactiion Successfully Edited!");
+            JOptionPane.showMessageDialog(null, "Transaction Successfully Edited!");
             refreshTable();
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -284,7 +293,7 @@ public class TransactionInfo extends JPanel {
         String username = SessionManager.getLoggedInUsername();
         if (username == null) {
             JOptionPane.showMessageDialog(null, "No user is logged in!");
-            return -1; // Indicate error (or handle it accordingly)
+            return -1; // Indicate error
         }
     
         int userId = -1; // Default value
@@ -301,6 +310,7 @@ public class TransactionInfo extends JPanel {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        System.out.println("User ID successfully obtained!"); // Debugging log
         return userId;
     }
 
@@ -313,16 +323,14 @@ public class TransactionInfo extends JPanel {
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "")) {
             
             // Get tariff_id and Tariff_Amount
-            String shipQuery = "SELECT category_id FROM ships WHERE id = ?";
-            try (PreparedStatement shipStmt = conn.prepareStatement(shipQuery)) {
+            try (PreparedStatement shipStmt = conn.prepareStatement("SELECT category_id FROM ships WHERE id = ?")) {
                 shipStmt.setString(1, shipId);
                 ResultSet shipRs = shipStmt.executeQuery();
                 if (shipRs.next()) {
                     int categoryId = shipRs.getInt("category_id");
 
                     // Get tariff amount from tariff table
-                    String tariffQuery = "SELECT Tariff_Amount FROM tariff WHERE category_id = ?";
-                    try (PreparedStatement tariffStmt = conn.prepareStatement(tariffQuery)) {
+                    try (PreparedStatement tariffStmt = conn.prepareStatement("SELECT Tariff_Amount FROM tariff WHERE category_id = ?")) {
                         tariffStmt.setInt(1, categoryId);
                         ResultSet tariffRs = tariffStmt.executeQuery();
                         if (tariffRs.next()) {
@@ -350,6 +358,7 @@ public class TransactionInfo extends JPanel {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+        System.out.println("Calculation successful!"); // Debugging log
         return totalAmount;
     }
 }

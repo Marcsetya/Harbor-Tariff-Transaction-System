@@ -91,7 +91,7 @@ public class TariffInfo extends JPanel {
 
         // Table
         tableModel = new DefaultTableModel(
-        new String[] { "ID", "Category ID", "Tariff Amount"}, 0);
+                new String[] { "ID", "Category ID", "Tariff Amount" }, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -113,10 +113,16 @@ public class TariffInfo extends JPanel {
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
 
+        // Middle wrapper
+        JPanel middleWrapper = new JPanel();
+        middleWrapper.setLayout(new BorderLayout());
+        middleWrapper.add(centerWrapper, BorderLayout.NORTH);
+        middleWrapper.add(scrollPane, BorderLayout.CENTER);
+
         // Adding components to the panel
         add(topPanel, BorderLayout.NORTH);
-        add(centerWrapper, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
+        add(middleWrapper, BorderLayout.CENTER);
+
     }
 
     // Adds a new tariff to the database
@@ -124,7 +130,8 @@ public class TariffInfo extends JPanel {
         String Category = shipCategoryField.getText();
         String Tariff = tariffAmountField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO tariff (category_id, Tariff_Amount) VALUES (?, ?)")) {
+                PreparedStatement stmt = conn
+                        .prepareStatement("INSERT INTO tariff (category_id, Tariff_Amount) VALUES (?, ?)")) {
             stmt.setString(1, Category);
             stmt.setString(2, Tariff);
             stmt.executeUpdate();
@@ -146,7 +153,8 @@ public class TariffInfo extends JPanel {
         String Category = shipCategoryField.getText();
         String Tariff = tariffAmountField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("UPDATE tariff SET category_id = ?, Tariff_Amount = ? WHERE id = ?")) {
+                PreparedStatement stmt = conn
+                        .prepareStatement("UPDATE tariff SET category_id = ?, Tariff_Amount = ? WHERE id = ?")) {
             stmt.setString(1, Category);
             stmt.setString(2, Tariff);
             stmt.setInt(3, id);
@@ -167,7 +175,7 @@ public class TariffInfo extends JPanel {
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM tariff WHERE id = ?")) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM tariff WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Tariff Successfully Removed!");
@@ -182,12 +190,12 @@ public class TariffInfo extends JPanel {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tariff WHERE Tariff_Amount LIKE ?")) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM tariff WHERE Tariff_Amount LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 tableModel.addRow(
-                new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
+                        new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -206,7 +214,7 @@ public class TariffInfo extends JPanel {
 
             while (rs.next()) {
                 tableModel.addRow(
-                new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
+                        new Object[] { rs.getInt("id"), rs.getInt("category_id"), rs.getString("Tariff_Amount") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {

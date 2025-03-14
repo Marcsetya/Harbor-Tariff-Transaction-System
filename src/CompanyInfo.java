@@ -102,7 +102,7 @@ public class CompanyInfo extends JPanel {
         searchButton.addActionListener(e -> searchCompany());
 
         // Wrapper for titleLabel & searchPanel
-        JPanel topPanel = new JPanel(new BorderLayout()); 
+        JPanel topPanel = new JPanel(new BorderLayout());
         topPanel.add(titleLabel, BorderLayout.NORTH);
         topPanel.add(searchPanel, BorderLayout.CENTER);
 
@@ -111,11 +111,17 @@ public class CompanyInfo extends JPanel {
         centerWrapper.setLayout(new BorderLayout()); // Stack elements vertically
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
+        
+        // Middle wrapper
+        JPanel middleWrapper = new JPanel();
+        middleWrapper.setLayout(new BorderLayout());
+        middleWrapper.add(centerWrapper, BorderLayout.NORTH);
+        middleWrapper.add(scrollPane, BorderLayout.CENTER);
 
-        // Adding components to panel
+        // Adding components to the panel
         add(topPanel, BorderLayout.NORTH);
-        add(centerWrapper, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
+        add(middleWrapper, BorderLayout.CENTER);
+
     }
 
     // Adds a new company to the database
@@ -123,7 +129,8 @@ public class CompanyInfo extends JPanel {
         String name = nameField.getText();
         String billing = billingField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO company (company_name, billing_address) VALUES (?, ?)")) {
+                PreparedStatement stmt = conn
+                        .prepareStatement("INSERT INTO company (company_name, billing_address) VALUES (?, ?)")) {
             stmt.setString(1, name);
             stmt.setString(2, billing);
             stmt.executeUpdate();
@@ -145,7 +152,8 @@ public class CompanyInfo extends JPanel {
         String name = nameField.getText();
         String billing = billingField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("UPDATE company SET company_name = ?, billing_address = ? WHERE id = ?")) {
+                PreparedStatement stmt = conn
+                        .prepareStatement("UPDATE company SET company_name = ?, billing_address = ? WHERE id = ?")) {
             stmt.setString(1, name);
             stmt.setString(2, billing);
             stmt.setInt(3, id);
@@ -166,7 +174,7 @@ public class CompanyInfo extends JPanel {
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM company WHERE id = ?")) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM company WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Company Successfully Deleted!");
@@ -181,11 +189,12 @@ public class CompanyInfo extends JPanel {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM company WHERE company_name LIKE ?")) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM company WHERE company_name LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"), rs.getString("billing_address") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"),
+                        rs.getString("billing_address") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -203,7 +212,8 @@ public class CompanyInfo extends JPanel {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"), rs.getString("billing_address") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getString("company_name"),
+                        rs.getString("billing_address") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {

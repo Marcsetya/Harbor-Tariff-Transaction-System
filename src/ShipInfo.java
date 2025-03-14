@@ -99,7 +99,7 @@ public class ShipInfo extends JPanel {
 
         // Table
         tableModel = new DefaultTableModel(
-        new String[] { "ID", "Company ID", "Ship Category ID", "Ship Name", "Updated At" }, 0);
+                new String[] { "ID", "Company ID", "Ship Category ID", "Ship Name", "Updated At" }, 0);
         table = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(table);
 
@@ -120,11 +120,17 @@ public class ShipInfo extends JPanel {
         centerWrapper.setLayout(new BorderLayout()); // Stack elements vertically
         centerWrapper.add(centerPanel, BorderLayout.NORTH);
         centerWrapper.add(buttonPanel, BorderLayout.CENTER); // Move button panel below input fields
+        
+        // Middle wrapper
+        JPanel middleWrapper = new JPanel();
+        middleWrapper.setLayout(new BorderLayout());
+        middleWrapper.add(centerWrapper, BorderLayout.NORTH);
+        middleWrapper.add(scrollPane, BorderLayout.CENTER);
 
         // Adding components to the panel
         add(topPanel, BorderLayout.NORTH);
-        add(centerWrapper, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
+        add(middleWrapper, BorderLayout.CENTER);
+
     }
 
     // Adds a new ship info to the database
@@ -133,7 +139,8 @@ public class ShipInfo extends JPanel {
         String Category = shipCategoryField.getText();
         String ShipName = shipNameField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("INSERT INTO ships (company_id, category_id, ship_name) VALUES (?, ?, ?)")) {
+                PreparedStatement stmt = conn
+                        .prepareStatement("INSERT INTO ships (company_id, category_id, ship_name) VALUES (?, ?, ?)")) {
             stmt.setString(1, companyID);
             stmt.setString(2, Category);
             stmt.setString(3, ShipName);
@@ -157,7 +164,8 @@ public class ShipInfo extends JPanel {
         String Category = shipCategoryField.getText();
         String ShipName = shipNameField.getText();
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("UPDATE ships SET company_id = ?, category_id = ?, ship_name = ? WHERE id = ?")) {
+                PreparedStatement stmt = conn.prepareStatement(
+                        "UPDATE ships SET company_id = ?, category_id = ?, ship_name = ? WHERE id = ?")) {
             stmt.setString(1, companyID);
             stmt.setString(2, Category);
             stmt.setString(3, ShipName);
@@ -179,7 +187,7 @@ public class ShipInfo extends JPanel {
         }
         int id = (int) table.getValueAt(selectedRow, 0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("DELETE FROM ships WHERE id = ?")) {
+                PreparedStatement stmt = conn.prepareStatement("DELETE FROM ships WHERE id = ?")) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Ship Info Successfully Removed!");
@@ -194,11 +202,12 @@ public class ShipInfo extends JPanel {
         String keyword = searchField.getText();
         tableModel.setRowCount(0);
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ships WHERE ship_name LIKE ?")) {
+                PreparedStatement stmt = conn.prepareStatement("SELECT * FROM ships WHERE ship_name LIKE ?")) {
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"), rs.getInt("category_id"), rs.getString("ship_name"), rs.getTimestamp("updated_time") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"), rs.getInt("category_id"),
+                        rs.getString("ship_name"), rs.getTimestamp("updated_time") });
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -216,7 +225,8 @@ public class ShipInfo extends JPanel {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"), rs.getInt("category_id"), rs.getString("ship_name"), rs.getTimestamp("updated_time") });
+                tableModel.addRow(new Object[] { rs.getInt("id"), rs.getInt("company_id"), rs.getInt("category_id"),
+                        rs.getString("ship_name"), rs.getTimestamp("updated_time") });
             }
             System.out.println("Data fetched successfully! Rows: " + tableModel.getRowCount());
         } catch (SQLException ex) {
