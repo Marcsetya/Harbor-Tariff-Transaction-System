@@ -31,8 +31,10 @@ A Java-based desktop application for managing harbor ship traffic, company recor
 ## Setup Instructions
 
 1. Clone the repository:
-> git clone https://github.com/""/Harbor-Tariff-Transaction-System.git
-> cd Harbor-Tariff-Transaction-System
+```
+git clone https://github.com/yourusername/Harbor-Tariff-Transaction-System.git
+cd Harbor-Tariff-Transaction-System
+```
 
 2. Import into any IDE, ensure your JDBC driver is configured (MySQL Connector/J)
 
@@ -40,6 +42,6 @@ A Java-based desktop application for managing harbor ship traffic, company recor
 
 4. Update DB Credentials
 Modify the DB connection URL, username, and password in the Java files:
-> Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");
+`Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/htts", "root", "");`
 
 5. Run the application
